@@ -73,3 +73,22 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Asset store content - ignore everything in Content except:
+# - Landscape (local landscape objects)
+# - Maps (default map directory)
+# - StylizedNaturePack (Udemy course content)
+# - __ExternalActors__ and __ExternalObjects__ (UE5 OFPA - required for levels)
+# - README.md (instructions for asset store content)
+Content/*
+!Content/Landscape/
+!Content/Landscape/**
+!Content/Maps/
+!Content/Maps/**
+!Content/StylizedNaturePack/
+!Content/StylizedNaturePack/**
+!Content/__ExternalActors__/
+!Content/__ExternalActors__/**
+!Content/__ExternalObjects__/
+!Content/__ExternalObjects__/**
+!Content/README.md
