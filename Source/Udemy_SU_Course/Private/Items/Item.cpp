@@ -12,21 +12,21 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetActorLocation(FVector(0.f, 0.f, 200.f));
-	SetActorRotation(FRotator(0.f, 45.f, 0.f));
-
-	FVector Location = GetActorLocation();
-	FVector Forward = GetActorForwardVector();
-	FVector MultForward = Location + Forward * 100.f;
-
-	// DRAW_BOX(Location, FVector(100.f, 100.f, 100.f));
-	DRAW_SPHERE(Location);
-	// DRAW_COLOR_SPHERE(Location, FColor::Green);
-	DRAW_VECTOR(Location, MultForward);
 }
 
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Movement rate in units of cm/s
+	float MovementRate = 50.f;
+	float RotationRate = 45.f;
+
+	// MovementRate * Deltatime (cm/s) * (s/frame) = (cm/frame)
+	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
+	AddActorLocalRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));
+	DRAW_SPHERE_SingleFrame(GetActorLocation());
+	DRAW_VECTOR_SingleFrame(GetActorLocation(),
+	                        GetActorLocation() + GetActorForwardVector() *
+	                        100.f);
 }
