@@ -10,13 +10,23 @@ UCLASS()
 class UDEMY_SU_COURSE_API AItem : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AItem();
 
 	virtual void Tick(float DeltaTime) override;
-	
+
 protected:
 	virtual void BeginPlay() override;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
+	float Amplitude = 0.25f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine Parameters")
+	float TimeConstant = 5.f;
+
+private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = "true"))
+	float RunningTime;
 };
