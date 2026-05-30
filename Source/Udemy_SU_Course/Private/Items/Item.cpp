@@ -7,6 +7,10 @@
 AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(
+		TEXT("ItemMeshComponent"));
+	RootComponent = ItemMesh;
 }
 
 void AItem::BeginPlay()
@@ -16,25 +20,30 @@ void AItem::BeginPlay()
 
 float AItem::TransformedSin()
 {
-	return Amplitude * FMath::Sin(RunningTime * TimeConstant);
+	float transformedSin = Amplitude * FMath::Sin(RunningTime * TimeConstant);
+
+	// Educational logs
+	// UE_LOG(LogTemp, Warning, TEXT("TransformedSin: %f"), transformedSin);
+	// UE_LOG(LogTemp, Warning, TEXT("Item Z location: %f"), GetActorLocation().Z);
+
+	return transformedSin;
 }
 
 float AItem::TransformedCos()
 {
-	return Amplitude * FMath::Cos(RunningTime * TimeConstant);
+	float transformedCos = FMath::Cos(RunningTime * TimeConstant);
+	return transformedCos;
+}
+
+FRotator AItem::TransformedRotation()
+{
+	FRotator transformedRotation =
+		FRotator(0, RunningTime * RotationConstant, 0);
+	return transformedRotation;
 }
 
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	RunningTime += DeltaTime;
-
-	DRAW_SPHERE_SingleFrame(GetActorLocation());
-	DRAW_VECTOR_SingleFrame(GetActorLocation(),
-	                        GetActorLocation() + GetActorForwardVector() *
-	                        100.f);
-
-	FVector AvgVector = Avg<FVector>(GetActorLocation(), FVector::ZeroVector);
-	DRAW_POINT_SingleFrame(AvgVector);
 }
