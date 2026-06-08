@@ -2,6 +2,8 @@
 
 
 #include "Pawns/Bird.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 ABird::ABird()
 {
@@ -11,11 +13,21 @@ ABird::ABird()
 	Capsule->SetCapsuleHalfHeight(20.f);
 	Capsule->SetCapsuleRadius(15.f);
 	SetRootComponent(Capsule);
+
+	BirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BirdMesh"));
+	BirdMesh->SetupAttachment(Capsule);
+
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
 void ABird::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ABird::MoveForward(float Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Value);
 }
 
 void ABird::Tick(float DeltaTime)
@@ -27,4 +39,7 @@ void ABird::Tick(float DeltaTime)
 void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis(FName("MoveForward"), this,
+	                               &ABird::MoveForward);
 }
