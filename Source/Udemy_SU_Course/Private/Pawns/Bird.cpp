@@ -40,11 +40,6 @@ void ABird::BeginPlay()
 	}
 }
 
-void ABird::MoveForward(float Value)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Value);
-}
-
 void ABird::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -55,7 +50,7 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = 
+	if (UEnhancedInputComponent* EnhancedInputComponent =
 		CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered,
@@ -66,11 +61,22 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	//                                &ABird::MoveForward);
 }
 
+// Old axis input mapping method
+void ABird::MoveForward(float Value)
+{
+	if (Controller && Value != 0.f)
+	{
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward, Value);
+	}
+}
+
 void ABird::Move(const FInputActionValue& Value)
 {
-	const bool CurrentValue = Value.Get<bool>();
-	if (CurrentValue)
+	const float DirectionValue = Value.Get<float>();
+	if (Controller && DirectionValue != 0.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IA_Move triggered"));
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward, DirectionValue);
 	}
 }
