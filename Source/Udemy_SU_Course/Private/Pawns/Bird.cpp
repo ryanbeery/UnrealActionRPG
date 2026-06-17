@@ -7,6 +7,8 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 ABird::ABird()
 {
@@ -19,6 +21,13 @@ ABird::ABird()
 
 	BirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BirdMesh"));
 	BirdMesh->SetupAttachment(Capsule);
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(Capsule);
+	SpringArm->TargetArmLength = 300.f;
+
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	ViewCamera->SetupAttachment(SpringArm);
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -55,20 +64,18 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered,
 		                                   this, &ABird::Move);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered,
+		                                   this, &ABird::Look);
 	}
 
+	// The old ways!
+	//
 	// PlayerInputComponent->BindAxis(FName("MoveForward"), this,
 	//                                &ABird::MoveForward);
-}
-
-// Old axis input mapping method
-void ABird::MoveForward(float Value)
-{
-	if (Controller && Value != 0.f)
-	{
-		FVector Forward = GetActorForwardVector();
-		AddMovementInput(Forward, Value);
-	}
+	// PlayerInputComponent->BindAxis(FName("Turn"), this,
+	// 							   &ABird::Turn);
+	// PlayerInputComponent->BindAxis(FName("LookUp"), this,
+	// 							   &ABird::LookUp);
 }
 
 void ABird::Move(const FInputActionValue& Value)
@@ -79,4 +86,34 @@ void ABird::Move(const FInputActionValue& Value)
 		FVector Forward = GetActorForwardVector();
 		AddMovementInput(Forward, DirectionValue);
 	}
+}
+
+void ABird::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisValue = Value.Get<FVector2D>();
+	if (GetController())
+	{
+		AddControllerYawInput(LookAxisValue.X);
+		AddControllerPitchInput(LookAxisValue.Y);
+	}
+}
+
+// Old axis input mapping methods
+void ABird::MoveForward(float Value)
+{
+	if (Controller && Value != 0.f)
+	{
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward, Value);
+	}
+}
+
+void ABird::Turn(float Value)
+{
+	AddControllerYawInput(Value);
+}
+
+void ABird::LookUp(float Value)
+{
+	AddControllerPitchInput(Value);
 }
